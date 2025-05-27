@@ -1,0 +1,12 @@
+# Unity generated folders
+TestUnity/Library/
+TestUnity/Logs/
+TestUnity/Temp/
+TestUnity/Obj/
+# OS files
+.DS_Store
+# log files
+*.log
+unity_help.txt
+help.txt
+Unity_v2022.x.ulf
