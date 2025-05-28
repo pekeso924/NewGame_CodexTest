@@ -25,7 +25,7 @@ public class CubePlayModeTests
     }
 
     [UnityTest]
-    public IEnumerator CubeMovesLeftRightAndParticlePlays()
+    public IEnumerator CubeMovesLeftRightAndParticleContinuesToPlay()
     {
         Assert.IsNotNull(script.cube);
         Assert.IsNotNull(script.particle);
@@ -36,18 +36,21 @@ public class CubePlayModeTests
         yield return new WaitForSeconds(0.5f);
         float rightX = script.cube.transform.position.x;
         Assert.Greater(rightX, startX);
+        Assert.IsTrue(script.particle.isPlaying);
 
         yield return new WaitForSeconds(1.0f);
         float leftX = script.cube.transform.position.x;
         Assert.Less(leftX, startX);
+        Assert.IsTrue(script.particle.isPlaying);
 
         yield return new WaitForSeconds(0.5f);
         float endX = script.cube.transform.position.x;
         Assert.AreEqual(startX, endX, 0.1f);
+        Assert.IsTrue(script.particle.isPlaying);
 
-        // Wait for particle to finish (duration is 1s)
+        // Ensure particle keeps playing beyond the original duration
         yield return new WaitForSeconds(1f);
-        Assert.IsFalse(script.particle.isPlaying);
+        Assert.IsTrue(script.particle.isPlaying);
     }
 }
 #endif

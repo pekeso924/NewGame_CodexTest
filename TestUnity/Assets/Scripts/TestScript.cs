@@ -14,10 +14,17 @@ public class TestScript : MonoBehaviour
         // Add a simple particle system to the cube
         particle = cube.AddComponent<ParticleSystem>();
         particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        // Configure particle system to loop while the cube exists
         var main = particle.main;
         main.duration = 1f;
         main.startLifetime = 0.5f;
-        main.loop = false;
+        main.loop = true;
+
+        // Ensure the particle uses a valid material so it is not shown as a purple square
+        var renderer = particle.GetComponent<ParticleSystemRenderer>();
+        renderer.material = new Material(Shader.Find("Sprites/Default"));
+
         particle.Play();
 
         Debug.Log("Cube created and particle started");
