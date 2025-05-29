@@ -7,23 +7,21 @@ public static class CIImportStep
 {
     public static void ImportAndQuit()
     {
-        // 1️⃣ すべてのアセットを同期でインポート
+        // 1. 同期で全インポート
         AssetDatabase.Refresh(
             ImportAssetOptions.ForceUpdate |
             ImportAssetOptions.ForceSynchronousImport);
 
-        // 2️⃣ スクリプト再コンパイルや非同期インポートが終わるまで待機
+        // 2. 追加コンパイルなどが終わるまで待機
         while (EditorApplication.isCompiling ||
                CompilationPipeline.isCompiling ||
                EditorApplication.isUpdating)
         {
-            Thread.Sleep(100);    // 0.1 秒ごとにポーリング
+            Thread.Sleep(100);
         }
 
-        // 3️⃣ .meta / Asset 情報を確実にディスクへ
-        AssetDatabase.SaveAssets();
-
-        // 4️⃣ 正常終了
+        AssetDatabase.SaveAssets();      // 念のため保存
+        UnityEngine.Debug.Log("Import & compile finished → Exit");
         EditorApplication.Exit(0);
     }
 }
