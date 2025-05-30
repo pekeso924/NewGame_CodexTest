@@ -1,37 +1,31 @@
-// Assets/Editor/BatchBoot.cs
-using UnityEditor;
-using UnityEngine;
-using System.Linq;                  // 追加
-
 [InitializeOnLoad]
 internal static class BatchBoot
 {
     static BatchBoot()
     {
-        // ── 起動時にフル情報を吐く ───────────────────────
-        var args = System.Environment.GetCommandLineArgs();
-        Debug.LogFormat("[BatchBoot] Start - batchMode={0}, args={1}",
-                        Application.isBatchMode,
-                        string.Join(" ", args));             // ★全部表示
-
-        bool hasExecute = HasExecuteMethod();
-        Debug.Log("[BatchBoot] Has -executeMethod? " + hasExecute);
-
-        // CLI で起動された Editor だけを対象にする
-        if (Application.isBatchMode && !hasExecute)
-        {
-            Debug.Log("[BatchBoot] Calling CIImportStep.ImportAndQuit()");
-            CIImportStep.ImportAndQuit();
-        }
-        else
-        {
-            Debug.Log("[BatchBoot] Import step skipped");
-        }
+        if (!Application.isBatchMode || HasExecuteMethod()) return;
+        EditorApplication.delayCall += RefreshAndWait;
     }
 
-    private static bool HasExecuteMethod()
+    static void RefreshAndWait()
     {
-        return System.Environment.GetCommandLineArgs()
-                                 .Any(a => a == "-executeMethod");
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport |
+                              ImportAssetOptions.ForceUpdate);
+
+        // フレーム毎に監視
+        EditorApplication.update += WaitUntilIdle;
     }
+
+    static void WaitUntilIdle()
+    {
+        if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            return;
+
+        EditorApplication.update -= WaitUntilIdle;
+        AssetDatabase.SaveAssets();
+        EditorApplication.Exit(0);
+    }
+
+    static bool HasExecuteMethod() =>
+        System.Environment.GetCommandLineArgs().Any(a => a == "-executeMethod");
 }
