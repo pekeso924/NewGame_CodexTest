@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEditor.Compilation;
 using System.Threading;
-using System.Diagnostics;           // 追加
+using System.Diagnostics;
 
 public static class CIImportStep
 {
@@ -21,14 +21,17 @@ public static class CIImportStep
         int loops = 0;
         while (EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
-            if (++loops % 10 == 0) // 1 秒ごと
+            if (++loops % 10 == 0)          // 1 秒ごと
             {
-                UnityEngine.Debug.LogFormat("[CIImportStep] Waiting ... {0:0.0}s elapsed",
-                                             sw.Elapsed.TotalSeconds);
+                UnityEngine.Debug.LogFormat(
+                    "[CIImportStep] Waiting ... {0:0.0}s elapsed",
+                    sw.Elapsed.TotalSeconds);
             }
             Thread.Sleep(100);
         }
-        UnityEngine.Debug.LogFormat("[CIImportStep] Compile/Update finished ({0:0.0}s)", sw.Elapsed.TotalSeconds);
+        UnityEngine.Debug.LogFormat(
+            "[CIImportStep] Compile/Update finished ({0:0.0}s)",
+            sw.Elapsed.TotalSeconds);
 
         // 3. ビルド・終了
         AssetDatabase.SaveAssets();
@@ -39,7 +42,11 @@ public static class CIImportStep
     // ---- 追加: コンパイルイベントにもフックしておく ----
     static CIImportStep()
     {
-        CompilationPipeline.compilationStarted   += () => UnityEngine.Debug.Log("[CIImportStep] Compilation START");
-        CompilationPipeline.compilationFinished  += _ => UnityEngine.Debug.Log("[CIImportStep] Compilation FINISH");
+        // compilationStarted は Action<object> なので
+        // ダミー引数（_）を受け取る形に修正
+        CompilationPipeline.compilationStarted  += _ =>
+            UnityEngine.Debug.Log("[CIImportStep] Compilation START");
+        CompilationPipeline.compilationFinished += _ =>
+            UnityEngine.Debug.Log("[CIImportStep] Compilation FINISH");
     }
 }
