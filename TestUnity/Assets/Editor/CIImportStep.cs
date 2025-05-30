@@ -14,7 +14,6 @@ public static class CIImportStep
 
         // 2. 追加コンパイルなどが終わるまで待機
         while (EditorApplication.isCompiling ||
-               CompilationPipeline.isCompiling ||
                EditorApplication.isUpdating)
         {
             Thread.Sleep(100);
