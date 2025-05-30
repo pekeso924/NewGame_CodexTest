@@ -1,3 +1,7 @@
+using UnityEditor;
+using UnityEngine;
+using System.Diagnostics;
+
 [InitializeOnLoad]
 internal static class BatchBoot
 {
@@ -29,3 +33,4 @@ internal static class BatchBoot
     static bool HasExecuteMethod() =>
         System.Environment.GetCommandLineArgs().Any(a => a == "-executeMethod");
 }
+
