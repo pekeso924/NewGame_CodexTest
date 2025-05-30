@@ -2,85 +2,66 @@ using UnityEditor;
 using UnityEngine;
 using System.Diagnostics;
 using System.Linq;
-using System;
 
 [InitializeOnLoad]
 internal static class BatchBoot
 {
     static BatchBoot()
     {
-        LogToConsole("=== BatchBoot: 初期化開始 ===");
-        LogToConsole($"BatchBoot: Application.isBatchMode = {Application.isBatchMode}");
-        LogToConsole($"BatchBoot: HasExecuteMethod() = {HasExecuteMethod()}");
+        Debug.Log("[BatchBoot] コンストラクタが呼び出されました");
+        Debug.Log($"[BatchBoot] Application.isBatchMode: {Application.isBatchMode}");
+        Debug.Log($"[BatchBoot] HasExecuteMethod(): {HasExecuteMethod()}");
         
         if (!Application.isBatchMode || HasExecuteMethod()) 
         {
-            LogToConsole("BatchBoot: バッチモードではないか、executeMethodが指定されているため処理をスキップします");
+            Debug.Log("[BatchBoot] バッチモードではないか、executeMethodが指定されているため、処理をスキップします");
             return;
         }
         
-        LogToConsole("BatchBoot: delayCallにRefreshAndWaitを登録します");
+        Debug.Log("[BatchBoot] DelayCallでRefreshAndWaitを登録します");
         EditorApplication.delayCall += RefreshAndWait;
-        LogToConsole("=== BatchBoot: 初期化完了 ===");
     }
 
     static void RefreshAndWait()
     {
-        LogToConsole("=== RefreshAndWait: 開始 ===");
-        LogToConsole("RefreshAndWait: AssetDatabase.Refreshを実行します...");
+        Debug.Log("[BatchBoot] RefreshAndWaitが開始されました");
+        Debug.Log("[BatchBoot] AssetDatabase.Refreshを実行します");
         
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport |
                               ImportAssetOptions.ForceUpdate);
-        
-        LogToConsole("RefreshAndWait: AssetDatabase.Refresh完了");
-        LogToConsole("RefreshAndWait: WaitUntilIdleをEditorApplication.updateに登録します");
+
+        Debug.Log("[BatchBoot] AssetDatabase.Refreshが完了しました");
+        Debug.Log("[BatchBoot] EditorApplication.updateにWaitUntilIdleを登録します");
         
         // フレーム毎に監視
         EditorApplication.update += WaitUntilIdle;
-        LogToConsole("=== RefreshAndWait: 完了 ===");
     }
 
     static void WaitUntilIdle()
     {
-        LogToConsole($"WaitUntilIdle: チェック中... isCompiling={EditorApplication.isCompiling}, isUpdating={EditorApplication.isUpdating}");
+        Debug.Log($"[BatchBoot] WaitUntilIdle - isCompiling: {EditorApplication.isCompiling}, isUpdating: {EditorApplication.isUpdating}");
         
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
-            LogToConsole("WaitUntilIdle: まだコンパイル中またはアップデート中のため待機します");
+            Debug.Log("[BatchBoot] まだコンパイル中または更新中のため、待機を継続します");
             return;
         }
 
-        LogToConsole("=== WaitUntilIdle: アイドル状態を検出、終了処理開始 ===");
-        LogToConsole("WaitUntilIdle: EditorApplication.updateからWaitUntilIdleを削除します");
+        Debug.Log("[BatchBoot] アイドル状態になりました。終了処理を開始します");
         EditorApplication.update -= WaitUntilIdle;
         
-        LogToConsole("WaitUntilIdle: AssetDatabase.SaveAssetsを実行します...");
+        Debug.Log("[BatchBoot] AssetDatabase.SaveAssetsを実行します");
         AssetDatabase.SaveAssets();
-        LogToConsole("WaitUntilIdle: AssetDatabase.SaveAssets完了");
         
-        LogToConsole("WaitUntilIdle: EditorApplication.Exit(0)でUnityエディターを終了します");
-        LogToConsole("=== BatchBoot処理完了 - Unityを終了します ===");
+        Debug.Log("[BatchBoot] EditorApplication.Exit(0)でUnityエディタを終了します");
         EditorApplication.Exit(0);
     }
 
-    static bool HasExecuteMethod() =>
-        System.Environment.GetCommandLineArgs().Any(a => a == "-executeMethod");
-    
-    /// <summary>
-    /// コンソールとUnityログの両方に出力
-    /// </summary>
-    static void LogToConsole(string message)
+    static bool HasExecuteMethod()
     {
-        string timestampedMessage = $"[{DateTime.Now:HH:mm:ss.fff}] {message}";
-        
-        // Unityのログに出力
-        Debug.Log(timestampedMessage);
-        
-        // コンソールに直接出力（バッチモード時に確実に見えるように）
-        Console.WriteLine(timestampedMessage);
-        
-        // 即座にフラッシュしてバッファリングを防ぐ
-        Console.Out.Flush();
+        var hasExecuteMethod = System.Environment.GetCommandLineArgs().Any(a => a == "-executeMethod");
+        Debug.Log($"[BatchBoot] HasExecuteMethod結果: {hasExecuteMethod}");
+        return hasExecuteMethod;
     }
 }
 
