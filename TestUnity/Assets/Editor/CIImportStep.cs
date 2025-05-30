@@ -2,25 +2,44 @@
 using UnityEditor;
 using UnityEditor.Compilation;
 using System.Threading;
+using System.Diagnostics;           // 追加
 
 public static class CIImportStep
 {
     public static void ImportAndQuit()
     {
+        var sw = Stopwatch.StartNew();
+        UnityEngine.Debug.Log("[CIImportStep] === ImportAndQuit START ===");
+
         // 1. 同期で全インポート
-        AssetDatabase.Refresh(
-            ImportAssetOptions.ForceUpdate |
-            ImportAssetOptions.ForceSynchronousImport);
+        UnityEngine.Debug.Log("[CIImportStep] AssetDatabase.Refresh ...");
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate |
+                              ImportAssetOptions.ForceSynchronousImport);
+        UnityEngine.Debug.LogFormat("[CIImportStep] Refresh done ({0:0.0}s)", sw.Elapsed.TotalSeconds);
 
         // 2. 追加コンパイルなどが終わるまで待機
-        while (EditorApplication.isCompiling ||
-               EditorApplication.isUpdating)
+        int loops = 0;
+        while (EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
+            if (++loops % 10 == 0) // 1 秒ごと
+            {
+                UnityEngine.Debug.LogFormat("[CIImportStep] Waiting ... {0:0.0}s elapsed",
+                                             sw.Elapsed.TotalSeconds);
+            }
             Thread.Sleep(100);
         }
+        UnityEngine.Debug.LogFormat("[CIImportStep] Compile/Update finished ({0:0.0}s)", sw.Elapsed.TotalSeconds);
 
-        AssetDatabase.SaveAssets();      // 念のため保存
-        UnityEngine.Debug.Log("Import & compile finished → Exit");
+        // 3. ビルド・終了
+        AssetDatabase.SaveAssets();
+        UnityEngine.Debug.Log("[CIImportStep] Assets saved, exiting Unity");
         EditorApplication.Exit(0);
+    }
+
+    // ---- 追加: コンパイルイベントにもフックしておく ----
+    static CIImportStep()
+    {
+        CompilationPipeline.compilationStarted   += () => UnityEngine.Debug.Log("[CIImportStep] Compilation START");
+        CompilationPipeline.compilationFinished  += _ => UnityEngine.Debug.Log("[CIImportStep] Compilation FINISH");
     }
 }
