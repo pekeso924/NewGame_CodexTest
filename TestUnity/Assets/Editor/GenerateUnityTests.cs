@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// CLI から  
-/// <br/>`-executeMethod GenerateUnityTests.EditModeSamples_NoAsmdef`  
+/// <br/>`-executeMethod GenerateUnityTests.EditModeSamples`  
 /// を呼び出すと、<c>Assets/Tests/Editor</c> に
 ///
 /// * <c>SampleTest.cs</c>（NUnit サンプルテスト）
