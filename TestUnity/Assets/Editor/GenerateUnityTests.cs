@@ -3,53 +3,48 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// CLI から  
+/// <br/>`-executeMethod GenerateUnityTests.EditModeSamples_NoAsmdef`  
+/// を呼び出すと、<c>Assets/Tests/Editor</c> に
+///
+/// * <c>SampleTest.cs</c>（NUnit サンプルテスト）
+///
+/// を生成し、`AssetDatabase.Refresh()` します。  
+/// 既存ファイルがある場合は上書きせずスキップする安全設計です。
+/// <para>
+/// asmdef を生成しないため、テストは Assembly-CSharp-Editor.dll に
+/// 直接コンパイルされます。  
+/// リリースビルドへ混入しないよう、CI 等で  
+/// 「Assets/Tests/** を除外」する運用を推奨します。
+/// </para>
+/// </summary>
 public static class GenerateUnityTests
 {
-    /// <summary>
-    /// バッチ専用。CLI から  
-    /// <br/>`-executeMethod GenerateUnityTests.EditModeSamples`
-    /// を呼び出すと、<c>Assets/Tests</c> 以下に
-    /// 
-    /// * <c>Tests.asmdef</c> （EditMode 用アセンブリ定義）
-    /// * <c>SampleTest.cs</c> （NUnit サンプルテスト）
-    /// 
-    /// を生成して `AssetDatabase.Refresh()` します。  
-    /// 既存ファイルがある場合は **上書きせずスキップ** するため安全です。
-    /// </summary>
-    public static void EditModeSamples()
+    public static void EditModeSamples_NoAsmdef()
     {
-        const string testsPath = "Assets/Tests";
+        const string testsPath = "Assets/Tests/Editor";  // ★Editor サブフォルダー
 
-        // ── 1) 『Assets/Tests』フォルダーを必ず用意 ─────────────
+        // ── 1) 『Assets/Tests/Editor』フォルダーを必ず用意 ─────────
         if (!AssetDatabase.IsValidFolder(testsPath))
         {
-            // 既に Assets/Tests 以外の「Tests 1」「Tests 2」…が存在しても
-            // ここで強制的に本来のパスを生成して固定化する
-            AssetDatabase.CreateFolder("Assets", "Tests");
-            Debug.Log("[GenerateUnityTests] Created Assets/Tests folder");
+            // 必要に応じて中間フォルダーも作成
+            if (!AssetDatabase.IsValidFolder("Assets/Tests"))
+                AssetDatabase.CreateFolder("Assets", "Tests");
+
+            AssetDatabase.CreateFolder("Assets/Tests", "Editor");
+            Debug.Log("[GenerateUnityTests] Created Assets/Tests/Editor folder");
         }
 
-        // ── 2) asmdef を生成（なければ）──────────────────────
-        var asmdefPath = Path.Combine(testsPath, "Tests.asmdef");
-        if (!File.Exists(asmdefPath))
-        {
-            var asmdefJson = @"{
-    ""name"": ""GeneratedEditModeTests"",
-    ""optionalUnityReferences"": [""TestAssemblies""],
-    ""includePlatforms"": [""Editor""],
-    ""defineConstraints"": [""UNITY_INCLUDE_TESTS""],
-    ""references"": [""RuntimeScripts""]
-}";
-            File.WriteAllText(asmdefPath, asmdefJson);
-            Debug.Log("[GenerateUnityTests] Created Tests.asmdef");
-        }
-
-        // ── 3) サンプルテストスクリプトを生成（なければ）────────
+        // ── 2) サンプルテストスクリプトを生成（なければ）───────────
         var testScriptPath = Path.Combine(testsPath, "SampleTest.cs");
         if (!File.Exists(testScriptPath))
         {
             var testScript = @"using NUnit.Framework;
 
+/// <summary>
+/// サンプル用の単純な EditMode テスト
+/// </summary>
 public class SampleTest
 {
     [Test]
@@ -62,11 +57,11 @@ public class SampleTest
             Debug.Log("[GenerateUnityTests] Created SampleTest.cs");
         }
 
-        // ── 4) Unity にインポートを認識させる ─────────────────
+        // ── 3) Unity にインポートを認識させる ────────────────────
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport |
                               ImportAssetOptions.ForceUpdate);
 
-        Debug.Log("[GenerateUnityTests] テストセットアップ完了");
+        Debug.Log("[GenerateUnityTests] テストセットアップ完了 (asmdef 無し)");
     }
 }
 #endif
