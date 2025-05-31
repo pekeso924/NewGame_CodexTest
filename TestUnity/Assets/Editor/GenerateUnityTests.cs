@@ -37,7 +37,8 @@ public static class GenerateUnityTests
     ""name"": ""GeneratedEditModeTests"",
     ""optionalUnityReferences"": [""TestAssemblies""],
     ""includePlatforms"": [""Editor""],
-    ""defineConstraints"": [""UNITY_INCLUDE_TESTS""]
+    ""defineConstraints"": [""UNITY_INCLUDE_TESTS""],
+    ""references"": [""RuntimeScripts""]
 }";
             File.WriteAllText(asmdefPath, asmdefJson);
             Debug.Log("[GenerateUnityTests] Created Tests.asmdef");
