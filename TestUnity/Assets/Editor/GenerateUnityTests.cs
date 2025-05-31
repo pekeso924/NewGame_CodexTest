@@ -21,7 +21,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateUnityTests
 {
-    public static void EditModeSamples_NoAsmdef()
+    public static void EditModeSamples()
     {
         const string testsPath = "Assets/Tests/Editor";  // ★Editor サブフォルダー
 
