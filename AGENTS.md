@@ -77,11 +77,16 @@
 
 ## 1. 開発の進め方
 
+* **テスト駆動開発 (TDD)** を徹底してください。まずテストを実装し、要件をすべて満たすまで開発を止めないでください。
 * オフライン環境です。外部インターネットに依存しない解決策のみを採用してください。
 * テストを意図的に甘く書き換えて合格を装う行為は **厳禁** です。
+* **時間的制約を除く客観的、論理的、理論値的に不可能** と判断した場合のみ作業をやめ、以下をレポートを.mdで作成してください。
+
+  1. 未実装機能
+  2. 「時間的制約を除く客観的、論理的、理論値的に不可能」と判断した根拠
+     根拠の提示なしに「不可能」と言い切らないこと。
 * あなたはヘッドレス環境しか利用できません。`-nographics` が随所で必要になります。
 * 個人開発です。
-* 最後に成功したテストの種類とどのようなテストを行ったか、仕様を本当に最後まで満たせたかを確認する.mdを生成してください。あなたの評価のために上司が確認します。
 
 ---
 
@@ -132,12 +137,12 @@ AI / 人間を問わず、本リポジトリで **.meta を手動編集・作成
 
   * **`-quit` を付けない方針で固定**します。
   * **ただし、どうしても `-executeMethod` を使用する必要がある場合は、必ず最後に `-forceBatchBoot` フラグを追加してください。**
-
+    
     ```bash
     # 例：カスタムメソッドを実行しつつBatchBootも動作させる場合
     Unity -batchmode -nographics -projectPath TestUnity -executeMethod MyClass.MyMethod -forceBatchBoot
     ```
-
+    
     * `-forceBatchBoot` フラグにより、`-executeMethod` が指定されていてもBatchBootスクリプトが確実に実行され、必要なアセットのインポートと`.meta`ファイルの生成が行われます。
     * このフラグを付け忘れると、BatchBootが動作せず、プロジェクトの整合性が保たれない可能性があります。
 
@@ -168,9 +173,9 @@ AI / 人間を問わず、本リポジトリで **.meta を手動編集・作成
 
    \*`-quit` を付けず、**`-executeMethod` も指定しない**でください。
    バッチ起動時は **BatchBoot** アセットが自動的に発火します。`-executeMethod` を付けると BatchBoot が発火しない場合があります。
-
+   
    **※ どうしても `-executeMethod` を使用する必要がある場合は、必ず `-forceBatchBoot` フラグを最後に追加してください：**
-
+   
    ```bash
    # カスタムメソッドを実行する場合の例
    /opt/unity/Editor/Unity -batchmode -nographics -projectPath TestUnity -executeMethod MyClass.MyMethod -forceBatchBoot
