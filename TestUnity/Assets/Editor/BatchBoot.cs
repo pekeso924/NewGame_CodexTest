@@ -11,9 +11,9 @@ internal static class BatchBoot
     // ──────────────────────────────────────────────────────────────
     static BatchBoot()
     {
-        // バッチモードでない／-executeMethod 指定あり
-        // いずれかなら何もしない
-        if (!Application.isBatchMode || HasExecuteMethod())
+        // -executeMethod があっても「-forceBatchBoot」フラグがあれば実行を継続
+        if (!Application.isBatchMode ||
+            (HasExecuteMethod() && !ForceBoot()))
             return;
 
         if (IsRunTests())
@@ -103,6 +103,9 @@ internal static class BatchBoot
     // ──────────────────────────────────────────────────────────────
     static bool HasExecuteMethod() =>
         System.Environment.GetCommandLineArgs().Any(a => a == "-executeMethod");
+
+    static bool ForceBoot() =>
+        System.Environment.GetCommandLineArgs().Any(a => a == "-forceBatchBoot");
 
     static bool IsRunTests() =>
         System.Environment.GetCommandLineArgs()
