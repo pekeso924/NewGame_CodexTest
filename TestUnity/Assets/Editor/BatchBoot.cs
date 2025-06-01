@@ -11,11 +11,20 @@ internal static class BatchBoot
     // ──────────────────────────────────────────────────────────────
     static BatchBoot()
     {
-        // バッチモードでない／-executeMethod 指定あり／-runTests 系指定あり
+        // バッチモードでない／-executeMethod 指定あり
         // いずれかなら何もしない
-        if (!Application.isBatchMode || HasExecuteMethod() || IsRunTests())
+        if (!Application.isBatchMode || HasExecuteMethod())
             return;
 
+        if (IsRunTests())
+        {
+            // 👇 即時にシーン登録だけ行い、Exit もしない
+            if (EnsureScenesInBuildSettings())
+                AssetDatabase.SaveAssets();   // Refresh は不要
+            return;
+        }
+
+        // 通常バッチ経路（CI セットアップ用）
         // アセットリフレッシュを 1 フレーム後に実行
         EditorApplication.delayCall += RefreshAndWait;
     }
@@ -52,7 +61,11 @@ internal static class BatchBoot
     // ──────────────────────────────────────────────────────────────
     //  Auto-register scenes with correct GUIDs
     // ──────────────────────────────────────────────────────────────
-    static void EnsureScenesInBuildSettings()
+    /// <summary>
+    /// すべてのシーンをBuildSettingsに自動登録
+    /// </summary>
+    /// <returns>true = 何か追加した</returns>
+    static bool EnsureScenesInBuildSettings()
     {
         // プロジェクト内のすべてのシーンパスを取得
         var allScenePaths = AssetDatabase.FindAssets("t:Scene")
@@ -81,6 +94,8 @@ internal static class BatchBoot
             EditorBuildSettings.scenes = existing.ToArray();
             Debug.Log($"[BatchBoot] Auto-registered {existing.Count - existingPaths.Count} new scene(s) to BuildSettings.");
         }
+
+        return updated;
     }
 
     // ──────────────────────────────────────────────────────────────
