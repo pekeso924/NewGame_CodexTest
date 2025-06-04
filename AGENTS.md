@@ -14,7 +14,7 @@
    3. 変更の反映と Unity の認識
    4. アセンブリ定義 (`.asmdef`)
    5. Git 操作の注意点
-   6. **CI で毎回起こる「意図しない差分」エラーを 0 にする手順**
+   6. **CI で毎回起こる「意図しない差分」エラーを 無くす鍵は`git add -A` → `git commit`。**
 4. テストについて
 
    1. **テスト結果 XML の安全な取得**
@@ -104,7 +104,20 @@
 ### 3.3 変更の反映と Unity の認識
 
 * CLI でファイル操作後は Unity が変更を検知する余裕を持たせる（短い sleep かバッチ起動＆終了）。
-* GUI が利用できない場合は `-batchmode -nographics` で起動し、**BatchBoot** ログを確認してください。
+* GUI が利用できない現在の環境では **`-batchmode -nographics`** で起動し、**BatchBoot** アセットのログを確認してください。
+* **BatchBoot** アセットの自動スクリプト（`Assets/Editor`）により、CLI から Unity を起動した際はインポート・コンパイル・`.meta` 生成が完了するまで待機し、その後自動で終了します。
+* **CLI 実行時に `-executeMethod` や `-quit` オプションは付けないでください。**
+
+  * **`-quit` を付けない方針で固定**します。
+  * **ただし、どうしても `-executeMethod` を使用する必要がある場合は、必ず最後に `-forceBatchBoot` フラグを追加してください。**
+    
+    ```bash
+    # 例：カスタムメソッドを実行しつつBatchBootも動作させる場合
+    Unity -batchmode -nographics -projectPath TestUnity -executeMethod MyClass.MyMethod -forceBatchBoot
+    ```
+    
+    * `-forceBatchBoot` フラグにより、`-executeMethod` が指定されていてもBatchBootスクリプトが確実に実行され、必要なアセットのインポートと`.meta`ファイルの生成が行われます。
+    * このフラグを付け忘れると、BatchBootが動作せず、プロジェクトの整合性が保たれない可能性があります。
 
 ### 3.4 アセンブリ定義 (`.asmdef`)
 
@@ -116,7 +129,7 @@
 * `.meta` を含む Unity 自動生成ファイルは、`git add -A` で *まるごとステージ* する方が安全です。
 * テスト結果 XML や一時生成物は `.gitignore` で除外し、リポジトリ肥大化を防ぎます。
 
-### 3.6 CI で毎回起こる「意図しない差分」エラーを 0 にする手順
+### 3.6 CI で毎回起こる「意図しない差分」エラーを 無くす鍵は`git add -A` → `git commit`。
 
 1. 一度バッチモードで Unity を起動し、自動生成物をすべて吐き出す。
 2. 生成された差分をそのままコミット (`git add -A` → `git commit`)。
