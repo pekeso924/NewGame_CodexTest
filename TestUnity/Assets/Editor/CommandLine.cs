@@ -13,4 +13,14 @@ public static class CommandLine
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/GeneratedScene.unity");
         Debug.Log("Scene generated and saved");
     }
+
+    // Method to create the main game scene with GameManager
+    public static void CreateGameScene()
+    {
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        var go = new GameObject("GameManager");
+        go.AddComponent<GameManager>();
+        EditorSceneManager.SaveScene(scene, "Assets/Scenes/GameScene.unity");
+        Debug.Log("Game scene generated and saved");
+    }
 }
