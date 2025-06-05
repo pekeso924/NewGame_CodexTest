@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2025-06-05 08:19:26Z" end-time="2025-06-05 08:19:27Z" duration="0.1120974">
+  <test-suite type="TestSuite" id="1009" name="TestUnity" fullname="TestUnity" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-06-05 08:19:26Z" end-time="2025-06-05 08:19:27Z" duration="0.112097" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1016" name="Assembly-CSharp-Editor.dll" fullname="/workspace/NewGame_CodexTest/TestUnity/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2025-06-05 08:19:26Z" end-time="2025-06-05 08:19:27Z" duration="0.073037" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="9420" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+      </properties>
+      <test-suite type="TestFixture" id="1010" name="GameTests" fullname="GameTests" classname="GameTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2025-06-05 08:19:26Z" end-time="2025-06-05 08:19:27Z" duration="0.066840" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1013" name="AddScoreIncrements" fullname="GameTests.AddScoreIncrements" methodname="AddScoreIncrements" classname="GameTests" runstate="Runnable" seed="1847252491" result="Passed" start-time="2025-06-05 08:19:27Z" end-time="2025-06-05 08:19:27Z" duration="0.020735" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1011" name="GameManagerCreatesArena" fullname="GameTests.GameManagerCreatesArena" methodname="GameManagerCreatesArena" classname="GameTests" runstate="Runnable" seed="286089295" result="Passed" start-time="2025-06-05 08:19:27Z" end-time="2025-06-05 08:19:27Z" duration="0.010736" asserts="0">
+          <properties />
+        </test-case>
+        <test-case id="1012" name="SpawnTargetsCreatesSpecifiedNumber" fullname="GameTests.SpawnTargetsCreatesSpecifiedNumber" methodname="SpawnTargetsCreatesSpecifiedNumber" classname="GameTests" runstate="Runnable" seed="1479209265" result="Passed" start-time="2025-06-05 08:19:27Z" end-time="2025-06-05 08:19:27Z" duration="0.003788" asserts="0">
+          <properties />
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1014" name="SampleTest" fullname="SampleTest" classname="SampleTest" runstate="Runnable" testcasecount="1" result="Passed" start-time="2025-06-05 08:19:27Z" end-time="2025-06-05 08:19:27Z" duration="0.004342" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1015" name="Passes" fullname="SampleTest.Passes" methodname="Passes" classname="SampleTest" runstate="Runnable" seed="1680801747" result="Passed" start-time="2025-06-05 08:19:27Z" end-time="2025-06-05 08:19:27Z" duration="0.001768" asserts="0">
+          <properties />
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
